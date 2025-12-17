@@ -17,6 +17,9 @@ jobs:
     name: PHP ${{ matrix.php-version }} Compatibility
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: read
+    
     strategy:
       fail-fast: false
       matrix:
