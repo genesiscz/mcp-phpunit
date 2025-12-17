@@ -21,10 +21,15 @@ This MCP server wraps PHPUnit functionality and converts raw test output into st
 
 ## Requirements
 
-- PHP 8.2, 8.3, or 8.4
+- PHP 8.2 or 8.3 (recommended)
+- PHP 8.4 (see Known Issues below)
 - PHPUnit 11.x
 - Composer 2.x
 - Extensions: `ext-dom`, `ext-json`
+
+### Known Issues
+
+**PHP 8.4 Compatibility**: There is currently a known issue with the upstream `php-mcp/server` dependency when running on PHP 8.4. The `FileCache` class has type declarations that are incompatible with PHP 8.4's stricter interface implementation requirements. This will be resolved in a future version of `php-mcp/server`. For production use, we recommend PHP 8.2 or 8.3 until this is resolved.
 
 ## Installation
 
