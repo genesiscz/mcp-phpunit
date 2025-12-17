@@ -1,0 +1,68 @@
+name: PHP Compatibility Tests
+
+# This workflow specifically tests PHP compatibility across versions 8.2, 8.3, and 8.4.
+# It runs the PhpCompatibilityTest suite first for quick feedback on version-specific features,
+# then validates all tests pass on each PHP version. This complements the qa.yml workflow
+# which focuses on code quality checks.
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  php-compatibility:
+    name: PHP ${{ matrix.php-version }} Compatibility
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.2', '8.3', '8.4']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: dom, json, mbstring
+          coverage: none
+          tools: composer:v2
+          
+      - name: Validate PHP version
+        run: |
+          php -v
+          echo "PHP version: $(php -r 'echo PHP_VERSION;')"
+          
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+            
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
+        
+      - name: Run PHP Compatibility Tests
+        run: |
+          echo "Running compatibility tests on PHP ${{ matrix.php-version }}..."
+          vendor/bin/phpunit tests/PhpCompatibilityTest.php --testdox --colors=always
+          
+      - name: Run Full Test Suite
+        run: |
+          echo "Running all tests on PHP ${{ matrix.php-version }}..."
+          vendor/bin/phpunit --testdox --colors=always
+          echo "✅ All tests passed on PHP ${{ matrix.php-version }}"

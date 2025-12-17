@@ -21,10 +21,15 @@ This MCP server wraps PHPUnit functionality and converts raw test output into st
 
 ## Requirements
 
-- PHP 8.2, 8.3, or 8.4
+- PHP 8.2 or 8.3 (recommended)
+- PHP 8.4 (see Known Issues below)
 - PHPUnit 11.x
 - Composer 2.x
 - Extensions: `ext-dom`, `ext-json`
+
+### Known Issues
+
+**PHP 8.4 Compatibility**: There is currently a known issue with the upstream `php-mcp/server` dependency when running on PHP 8.4. The `FileCache` class has type declarations that are incompatible with PHP 8.4's stricter interface implementation requirements. This will be resolved in a future version of `php-mcp/server`. For production use, we recommend PHP 8.2 or 8.3 until this is resolved.
 
 ## Installation
 
@@ -34,11 +39,37 @@ This MCP server wraps PHPUnit functionality and converts raw test output into st
 composer require php-mcp/phpunit
 ```
 
+### Installing from VCS Repository (GitHub)
+
+If you want to install directly from the GitHub repository (e.g., for development or to use a specific branch), add this to your project's `composer.json`:
+
+```json
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/genesiscz/mcp-phpunit.git"
+        }
+    ],
+    "require": {
+        "php-mcp/phpunit": "dev-main"
+    }
+}
+```
+
+Then run:
+
+```bash
+composer update php-mcp/phpunit
+```
+
+You can also specify a different branch by replacing `dev-main` with `dev-<branch-name>` or use a specific tag/version.
+
 ### Using Docker (Recommended for Development)
 
 ```bash
-git clone https://github.com/php-mcp/phpunit.git
-cd phpunit
+git clone https://github.com/genesiscz/mcp-phpunit.git
+cd mcp-phpunit
 docker-compose up -d
 docker-compose exec -T php-dev composer install
 ```
@@ -267,6 +298,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-- 📖 [Documentation](https://github.com/php-mcp/phpunit/wiki)
-- 🐛 [Issue Tracker](https://github.com/php-mcp/phpunit/issues)
-- 💬 [Discussions](https://github.com/php-mcp/phpunit/discussions)
+- 📖 [Documentation](https://github.com/genesiscz/mcp-phpunit/wiki)
+- 🐛 [Issue Tracker](https://github.com/genesiscz/mcp-phpunit/issues)
+- 💬 [Discussions](https://github.com/genesiscz/mcp-phpunit/discussions)
