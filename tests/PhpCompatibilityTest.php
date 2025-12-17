@@ -15,8 +15,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * Test PHP compatibility for versions 8.2+, including 8.3 and 8.4
  * 
- * Validates that modern PHP 8.0+ features work correctly and that
- * all core classes can be instantiated in the supported PHP versions.
+ * While the project requires PHP 8.2+, these tests validate that PHP 8.0+ and 8.1+
+ * features (which are available in PHP 8.2+) work correctly and that all core
+ * classes can be instantiated in the supported PHP versions.
  */
 class PhpCompatibilityTest extends TestCase
 {
