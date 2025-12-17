@@ -42,20 +42,19 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-php-${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
-            ${{ runner.os }}-php-
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
             
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --optimize-autoloader
+        run: composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
         
       - name: Run PHP Compatibility Tests
         run: |
-          vendor/bin/phpunit tests/PhpCompatibilityTest.php --testdox
-          echo "✅ PHP ${{ matrix.php-version }} compatibility tests passed"
+          echo "Running compatibility tests on PHP ${{ matrix.php-version }}..."
+          vendor/bin/phpunit tests/PhpCompatibilityTest.php --testdox --colors=always
           
-      - name: Run all tests on PHP ${{ matrix.php-version }}
+      - name: Run Full Test Suite
         run: |
-          vendor/bin/phpunit --testdox
+          echo "Running all tests on PHP ${{ matrix.php-version }}..."
+          vendor/bin/phpunit --testdox --colors=always
           echo "✅ All tests passed on PHP ${{ matrix.php-version }}"
