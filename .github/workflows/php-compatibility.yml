@@ -1,0 +1,61 @@
+name: PHP Compatibility Tests
+
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  php-compatibility:
+    name: PHP ${{ matrix.php-version }} Compatibility
+    runs-on: ubuntu-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: ['8.2', '8.3', '8.4']
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: dom, json, mbstring
+          coverage: none
+          tools: composer:v2
+          
+      - name: Validate PHP version
+        run: |
+          php -v
+          echo "PHP version: $(php -r 'echo PHP_VERSION;')"
+          
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+        
+      - name: Cache composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-php-${{ matrix.php-version }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
+            ${{ runner.os }}-php-
+            
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --optimize-autoloader
+        
+      - name: Run PHP Compatibility Tests
+        run: |
+          vendor/bin/phpunit tests/PhpCompatibilityTest.php --testdox
+          echo "✅ PHP ${{ matrix.php-version }} compatibility tests passed"
+          
+      - name: Run all tests on PHP ${{ matrix.php-version }}
+        run: |
+          vendor/bin/phpunit --testdox
+          echo "✅ All tests passed on PHP ${{ matrix.php-version }}"
