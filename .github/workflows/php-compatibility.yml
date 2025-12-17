@@ -1,5 +1,10 @@
 name: PHP Compatibility Tests
 
+# This workflow specifically tests PHP compatibility across versions 8.2, 8.3, and 8.4.
+# It runs the PhpCompatibilityTest suite first for quick feedback on version-specific features,
+# then validates all tests pass on each PHP version. This complements the qa.yml workflow
+# which focuses on code quality checks.
+
 on:
   push:
     branches: [ main, master, develop ]
