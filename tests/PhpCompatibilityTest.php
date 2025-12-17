@@ -80,6 +80,7 @@ class PhpCompatibilityTest extends TestCase
     public function testNullsafeOperator(): void
     {
         // Test nullsafe operator (PHP 8.0+)
+        // When used on null, it returns null instead of throwing an error
         $obj = null;
         $result = $obj?->method();
         $this->assertNull($result);
