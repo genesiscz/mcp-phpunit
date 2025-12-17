@@ -13,7 +13,10 @@ use PhpMcp\Phpunit\PhpunitExecutor;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test PHP compatibility across versions 8.2, 8.3, and 8.4
+ * Test PHP compatibility for versions 8.2+, including 8.3 and 8.4
+ * 
+ * Validates that modern PHP 8.0+ features work correctly and that
+ * all core classes can be instantiated in the supported PHP versions.
  */
 class PhpCompatibilityTest extends TestCase
 {
@@ -58,7 +61,7 @@ class PhpCompatibilityTest extends TestCase
         $this->assertInstanceOf(McpPhpunitServer::class, $server);
     }
 
-    public function testModernPhpFeaturesWork(): void
+    public function testStringFunctions(): void
     {
         // Test str_starts_with (PHP 8.0+)
         $this->assertTrue(str_starts_with('hello world', 'hello'));
@@ -71,14 +74,20 @@ class PhpCompatibilityTest extends TestCase
         // Test str_contains (PHP 8.0+)
         $this->assertTrue(str_contains('hello world', 'o w'));
         $this->assertFalse(str_contains('hello world', 'xyz'));
+    }
 
+    public function testNullsafeOperator(): void
+    {
         // Test nullsafe operator (PHP 8.0+)
         $obj = null;
         $result = $obj?->method();
         $this->assertNull($result);
+    }
 
+    public function testNamedArguments(): void
+    {
         // Test named arguments (PHP 8.0+)
-        $result = $this->testNamedArguments(value: 42, name: 'test');
+        $result = $this->helperWithNamedArguments(value: 42, name: 'test');
         $this->assertSame(['name' => 'test', 'value' => 42], $result);
     }
 
@@ -122,7 +131,7 @@ class PhpCompatibilityTest extends TestCase
         $this->assertSame('tdx', $result->testdoxText);
     }
 
-    private function testNamedArguments(string $name, int $value): array
+    private function helperWithNamedArguments(string $name, int $value): array
     {
         return ['name' => $name, 'value' => $value];
     }
